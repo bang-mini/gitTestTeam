@@ -44,5 +44,5 @@ git bash 실행 후 git할 경로 설정 해주기(cd)
 11. rm -rf .git
 => 로컬 레퍼지토리 취소
 
-git config --global --list
+12. git config --global --list
 => 리스트 확인
