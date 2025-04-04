@@ -12,34 +12,34 @@ git bash 실행 후 git할 경로 설정 해주기(cd)
 => 현재 경로(폴더) 로컬레퍼지토리화 시키겠습니다
 
 2. git config --global user.name "사용자이름"
-git config --global user.email "사용자이메일"
+3. git config --global user.email "사용자이메일"
 => 사용자 정보 입력
 
 
-3. git remote add origin 원격저장소 주소
+4. git remote add origin 원격저장소 주소
 => 원격 저장소 등록
 
 -------커밋 과정-------
-4. git add 프로젝트명
+5. git add 프로젝트명
 => 커밋 활성화
 
-5. git commit -m "커밋메시지"
+6. git commit -m "커밋메시지"
 => 커밋 실행
 -------------------------
 
-6. git push origin master
+7. git push origin master
 => 푸시 명령
 
-7. git pull origin master
+8. git pull origin master
 => 풀 명령
 ------------------------ 코드 공유 명령
 
-- git remote -v
+9. git remote -v
 => 등록된 원격 저장소 확인
 
-- git remote rm origin 
+10. git remote rm origin 
 
-rm -rf .git
+11. rm -rf .git
 => 로컬 레퍼지토리 취소
 
 git config --global --list
