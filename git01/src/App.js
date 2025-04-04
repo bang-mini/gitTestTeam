@@ -4,8 +4,8 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <h1>git 첫번째 커밋</h1>
-      <h1>git 두번째 커밋</h1>
+      <h1>P도 계획이 P료해</h1>
+      
     </div>
   );
 }
