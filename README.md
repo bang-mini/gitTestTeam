@@ -33,6 +33,7 @@ git bash 실행 후 git할 경로 설정 해주기(cd)
 
 8. git pull origin master
 => 풀 명령
+
 ------------------------ 코드 공유 명령
 
 9. git remote -v
