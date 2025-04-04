@@ -6,6 +6,7 @@ function App() {
     <div className="App">
       <h1>P도 계획이 P료해</h1>
       <h1>채리</h1>
+      <h1>광진</h1>
     </div>
   );
 }
