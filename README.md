@@ -23,7 +23,7 @@ SNS로그인
 OCR 기반 텍스트마이닝을 활용한 스터디플래너
 
 
-### 주요 기능
+## 주요 기능
 NAVER CLOVA OCR 활용해서 이미지의 텍스트 추출 기능 구현
 
 KRWORDRANK 라이브러리 활용해서 텍스트의 최빈단어 추출
@@ -32,11 +32,11 @@ KRWORDRANK 라이브러리 활용해서 텍스트의 최빈단어 추출
 
 
 
-### 아키텍처
+## 아키텍처
 작성중...
 
 
 
 
-### 마크다운 문법 (https://backendcode.tistory.com/165)
+## 마크다운 문법 (https://backendcode.tistory.com/165)
 
