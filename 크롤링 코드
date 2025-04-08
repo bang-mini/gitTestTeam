@@ -1,0 +1,147 @@
+# 라이브러리 불러오기
+from selenium import webdriver as wb
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from time import sleep
+import json
+
+# 과목명 매핑
+subject_map = {
+    '소프트웨어 설계': 1,
+    '소프트웨어 개발': 2,
+    '데이터베이스 구축': 3,
+    '프로그래밍 언어 활용': 4,
+    '정보시스템 구축관리': 5
+}
+
+# 드라이버 실행
+driver = wb.Chrome(service=Service(ChromeDriverManager().install()))
+driver.get('https://newbt.kr/')
+sleep(3)
+
+# 검색어 입력
+search = driver.find_element(By.ID, 'exam-search')
+search.send_keys('정보처리기사')
+
+# 정보처리기사 클릭
+pro_1 = driver.find_elements(By.CSS_SELECTOR, 'body > div:nth-child(6) > div:nth-child(4) > div:nth-child(35) > div')
+pro_1[0].click()
+
+# 연도 선택
+pro_1 = driver.find_elements(By.CSS_SELECTOR, '#serialSelect')
+pro_1[0].click()
+sleep(1)
+
+# 2022년 2회 선택
+pro_1 = driver.find_elements(By.CSS_SELECTOR, '#serialList > li:nth-child(7)')
+pro_1[0].click()
+#serialList > li:nth-child(7)
+# 톱니바퀴 클릭
+driver.find_element(By.CSS_SELECTOR, 'label.setting').click()
+sleep(1)
+
+# 순차보기 선택
+driver.find_element(By.CSS_SELECTOR, '#settingModal > div > div > div.modal-body > div:nth-child(2) > div.custom-control.custom-radio.mb-3 > label').click()
+
+# 설정하기 클릭
+driver.find_element(By.CSS_SELECTOR, '#settingModal > div > div > div.modal-footer > button.btn.btn-primary').click()
+sleep(1)
+
+# 처음 버튼 클릭
+driver.find_element(By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.mb-4 > a:nth-child(1)').click()
+sleep(1)
+
+result_list = []
+
+while True:
+    try:
+        sleep(1)
+
+        # 정답 보기 클릭
+        try:
+            driver.find_element(By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.mb-4 > a.btn.btn-sm.btn-secondary').click()
+            sleep(1)
+        except:
+            print("정답 보기 버튼 없음")
+
+        # 과목명
+        subject_name = driver.find_element(By.CSS_SELECTOR, '#categorySelect').text.strip()
+        subject_no = subject_map.get(subject_name, 0)
+
+        # 문제 텍스트
+        question_elem = driver.find_element(By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.blog-post.question > h5')
+        question_text = question_elem.text.strip()[2:].strip()
+
+        # 문제 상세
+        try:
+            pre_elem = driver.find_element(By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.blog-post.question > pre')
+            question_detail = pre_elem.text.strip()
+        except:
+            question_detail = None
+
+        # 보기 및 정답 추출
+        choices = []
+        answer = None
+        for j in range(1, 5):
+            elem = driver.find_element(By.CSS_SELECTOR, f'#example{j}')
+            full_text = elem.text.strip()
+            cleaned_text = full_text[2:].strip()
+            choices.append(cleaned_text)
+            if '\n' in full_text:
+                answer = j
+
+        # 해설 링크
+        try:
+            WebDriverWait(driver, 3).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.resolveCover > div > div'))
+            )
+            exp_btn = driver.find_element(By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.resolveCover > div > div')
+            driver.execute_script("arguments[0].click();", exp_btn)
+            sleep(1)
+
+            href_elem = driver.find_element(By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.resolveCover > div > a')
+            explanation_url = href_elem.get_attribute('href')
+        except:
+            explanation_url = None
+
+        data = {
+            "subject_no": subject_no,
+            "question": question_text,
+            "question_detail": question_detail,
+            "choice_1": choices[0],
+            "choice_2": choices[1],
+            "choice_3": choices[2],
+            "choice_4": choices[3],
+            "answer": answer,
+            "explanation": explanation_url
+        }
+
+        result_list.append(data)
+        print(f"[{len(result_list)}] 저장 완료: {question_text}")
+
+        # 다음 문제로 이동
+        try:
+            next_btn = driver.find_element(By.CSS_SELECTOR, '#main > div > div.col-sm-8.blog-main > div.mb-4 > a:nth-child(4)')
+            if 'disabled' in next_btn.get_attribute('class'):
+                print("마지막 문제 도달. 크롤링 종료.")
+                break
+            else:
+                next_btn.click()
+        except:
+            print("다음 버튼 클릭 실패. 크롤링 종료.")
+            break
+
+    except Exception as e:
+        print(f"에러 발생: {e}")
+        break
+
+# 저장
+try:
+    with open('2020년 3회 정처기 필기.json', 'w', encoding='utf-8') as f:
+        json.dump(result_list, f, ensure_ascii=False, indent=4)
+    print("파일 저장 완료!! 총 수집 문제 수:", len(result_list))
+except Exception as e:
+    print(f"파일 저장 중 오류 발생: {e}")
